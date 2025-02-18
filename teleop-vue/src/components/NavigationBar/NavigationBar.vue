@@ -21,6 +21,11 @@
             class="stop-button navbar-item"
             @clicked="onStop"
           />
+          <action-button
+            label="Unlock"
+            class="unlock-button navbar-item"
+            @clicked="onUnlock"
+          />
         </div>
       </div>
     </nav>
@@ -75,6 +80,13 @@ export default {
         );
       }
     },
+    onUnlock() {
+    if (this.$store.state.localClient.openteraTeleop.client) {
+      this.$store.state.localClient.openteraTeleop.client.sendToAll(
+        JSON.stringify({ type: "unlock", state: true })
+      );
+    }
+   },
   },
 };
 </script>

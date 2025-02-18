@@ -29,3 +29,9 @@ button:not(:disabled) {
   border-color: darkred;
   --hover-background-color: rgb(255, 77, 77);
 }
+
+.unlock-button {
+  background-color: green;
+  border-color: darkgreen;
+  --hover-background-color: rgb(77, 255, 77);
+}
