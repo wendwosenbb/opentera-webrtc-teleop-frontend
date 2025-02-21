@@ -14,6 +14,21 @@
           <actions-menu
             class="navbar-item margin-right-extend margin-left-extend"
           />
+          <action-button
+            label="CapDeadImg"
+            class="CapDeadImg-button navbar-item"
+            @clicked="onCapDeadImg"
+          />
+          <action-button
+            label="GetRobotPose"
+            class="GetRobotPose-button navbar-item"
+            @clicked="onGetRobotPose"
+          />
+          <action-button
+            label="ToggleBumpStop"
+            class="ToggleBumpStop-button navbar-item"
+            @clicked="onToggleBumpStop"
+          />
           <signal-strength-indicator class="navbar-item" />
           <battery-indicator class="navbar-item" />
           <action-button
@@ -80,6 +95,27 @@ export default {
         );
       }
     },
+    onCapDeadImg() {
+    if (this.$store.state.localClient.openteraTeleop.client) {
+      this.$store.state.localClient.openteraTeleop.client.sendToAll(
+        JSON.stringify({ type: "CapDeadImg", state: true })
+      );
+    }
+   },
+    onGetRobotPose() {
+    if (this.$store.state.localClient.openteraTeleop.client) {
+      this.$store.state.localClient.openteraTeleop.client.sendToAll(
+        JSON.stringify({ type: "GetRobotPose", state: true })
+      );
+    }
+   },
+    onToggleBumpStop() {
+    if (this.$store.state.localClient.openteraTeleop.client) {
+      this.$store.state.localClient.openteraTeleop.client.sendToAll(
+        JSON.stringify({ type: "ToggleBumpStop", state: true })
+      );
+    }
+   },
     onUnlock() {
     if (this.$store.state.localClient.openteraTeleop.client) {
       this.$store.state.localClient.openteraTeleop.client.sendToAll(

@@ -35,3 +35,19 @@ button:not(:disabled) {
   border-color: darkgreen;
   --hover-background-color: rgb(77, 255, 77);
 }
+
+.CapDeadImg-button {
+  background-color: lightblue;
+  border-color: deepskyblue;
+  --hover-background-color: skyblue;
+}
+.GetRobotPose-button {
+  background-color: lightblue;
+  border-color: deepskyblue;
+  --hover-background-color: skyblue;
+}
+.ToggleBumpStop-button {
+  background-color: lightblue;
+  border-color: deepskyblue;
+  --hover-background-color: skyblue;
+}
