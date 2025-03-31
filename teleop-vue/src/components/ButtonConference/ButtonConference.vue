@@ -39,7 +39,7 @@
         <button type="button" class="btn btn-primary-dark btn-dropup-middle">
           <svg-icon icon="spinner-control" />
         </button>
-        <div class="dropup-content">
+        <div class=slider-container">
           <input
             type="range"
             min="-0.15"
@@ -205,10 +205,16 @@ export default {
 
     const spinnerValue = ref(0);
 
-    const updateSpinnerControl = () => {
+    const updateSpinnerControl = (event) => {
+      const slider = event.target; // Get slider element
+      store.commit("localClient/openteraTeleop/setSpinnerValue", parseFloat(slider.value));
+
       if (store.state.localClient.openteraTeleop.client) {
         store.state.localClient.openteraTeleop.client.sendToAll(
-          JSON.stringify({ type: "spinner", value: spinnerValue.value })
+          JSON.stringify({
+            type: "spinner",
+            value: store.state.localClient.openteraTeleop.status.spinner,
+          })
         );
       }
     };
