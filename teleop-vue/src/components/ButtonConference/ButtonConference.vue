@@ -36,6 +36,24 @@
         </div>
       </div>
       <div class="dropup">
+        <button type="button" class="btn btn-primary-dark btn-dropup-middle">
+          <svg-icon icon="spinner-control" />
+        </button>
+        <div class="dropup-content">
+          <input
+            type="range"
+            min="-0.15"
+            max="0.15"
+            value="0"
+            step="0.01"
+            class="slider"
+            id="spinnerControlSlider"
+            v-model="spinnerValue"
+            @input="updateSpinnerControl"
+          />
+        </div>
+      </div>      
+      <div class="dropup">
         <button
           type="button"
           class="btn btn-primary-dark btn-dropup-middle" 
@@ -185,6 +203,16 @@ export default {
       setRobotVolume,
     } = useButtons();
 
+    const spinnerValue = ref(0);
+
+    const updateSpinnerControl = () => {
+      if (store.state.localClient.openteraTeleop.client) {
+        store.state.localClient.openteraTeleop.client.sendToAll(
+          JSON.stringify({ type: "spinner", value: spinnerValue.value })
+        );
+      }
+    };
+
     return {
       isInCall,
       isCameraOn,
@@ -207,6 +235,9 @@ export default {
       toggleRobotCamera,
       setRobotMicVolume,
       setRobotVolume,
+
+      spinnerValue,
+      updateSpinnerControl,
     };
   },
   inject: ["robotCaps"],

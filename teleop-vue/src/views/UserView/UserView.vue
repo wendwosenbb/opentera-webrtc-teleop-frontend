@@ -1,6 +1,6 @@
 <template>
   <default-template
-    brand="Opentera User Interface"
+    brand="BirdsEye Robotics Interface"
     route="user"
     v-bind:client="{
       name: name,
