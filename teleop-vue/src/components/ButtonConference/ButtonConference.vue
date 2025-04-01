@@ -39,7 +39,7 @@
         <button type="button" class="btn btn-primary-dark btn-dropup-middle">
           <svg-icon icon="spinner-control" />
         </button>
-        <div class=slider-container">
+        <div class="slider-container">
           <input
             type="range"
             min="-0.15"
@@ -172,7 +172,8 @@
 <script>
 import useButtons from "./useButtons";
 import { SvgIcon } from "@/components/SvgIcon";
-
+import { ref } from "vue";
+import { useStore } from "vuex";
 export default {
   name: "button-conference",
   components: {
