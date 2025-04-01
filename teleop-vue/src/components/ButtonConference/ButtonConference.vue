@@ -176,18 +176,14 @@ import { ref } from "vue";
 import { useStore } from "vuex";
 
 export default {
-  setup() {
-    const store = useStore(); // ✅ Correctly assign store
-
-    return { store };
-  }
-};
-export default {
   name: "button-conference",
   components: {
     SvgIcon,
   },
   setup() {
+
+    const store = useStore(); // ✅ Assign Vuex store
+
     const {
       isInCall,
       isCameraOn,
@@ -229,6 +225,7 @@ export default {
     };
 
     return {
+      store,
       isInCall,
       isCameraOn,
       sessionMicVolume,
