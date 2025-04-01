@@ -216,12 +216,15 @@ export default {
 
       store.commit("localClient/openteraTeleop/setSpinnerValue", value);
 
-      const client = store.state.localClient?.openteraTeleop?.client;
+      const client = store.state.localClient && 
+                    store.state.localClient.openteraTeleop &&
+                    store.state.localClient.openteraTeleop.client;
+
       if (client) {
         client.sendToAll(
           JSON.stringify({
-            type: "spinner",
-            value: store.state.localClient.openteraTeleop.status.spinner,
+            type: "yourMessageType",
+            value: "yourValue",
           })
         );
       }
