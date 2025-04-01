@@ -214,17 +214,14 @@ export default {
       const slider = event.target;
       const value = parseFloat(slider.value);
 
+      spinnerValue.value = value; // Update the Vue ref
       store.commit("localClient/openteraTeleop/setSpinnerValue", value);
 
-      const client = store.state.localClient && 
-                    store.state.localClient.openteraTeleop &&
-                    store.state.localClient.openteraTeleop.client;
-
-      if (client) {
-        client.sendToAll(
+      if (store.state.localClient.openteraTeleop.client) {
+        store.state.localClient.openteraTeleop.client.sendToAll(
           JSON.stringify({
-            type: "yourMessageType",
-            value: "yourValue",
+            type: "spinner",
+            value: value, // Send the actual slider value
           })
         );
       }
