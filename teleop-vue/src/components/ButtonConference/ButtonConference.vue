@@ -174,6 +174,14 @@ import useButtons from "./useButtons";
 import { SvgIcon } from "@/components/SvgIcon";
 import { ref } from "vue";
 import { useStore } from "vuex";
+
+export default {
+  setup() {
+    const store = useStore(); // ✅ Correctly assign store
+
+    return { store };
+  }
+};
 export default {
   name: "button-conference",
   components: {
