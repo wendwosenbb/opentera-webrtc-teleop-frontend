@@ -211,11 +211,14 @@ export default {
     const spinnerValue = ref(0);
 
     const updateSpinnerControl = (event) => {
-      const slider = event.target; // Get slider element
-      store.commit("localClient/openteraTeleop/setSpinnerValue", parseFloat(slider.value));
+      const slider = event.target;
+      const value = parseFloat(slider.value);
 
-      if (store.state.localClient.openteraTeleop.client) {
-        store.state.localClient.openteraTeleop.client.sendToAll(
+      store.commit("localClient/openteraTeleop/setSpinnerValue", value);
+
+      const client = store.state.localClient?.openteraTeleop?.client;
+      if (client) {
+        client.sendToAll(
           JSON.stringify({
             type: "spinner",
             value: store.state.localClient.openteraTeleop.status.spinner,
