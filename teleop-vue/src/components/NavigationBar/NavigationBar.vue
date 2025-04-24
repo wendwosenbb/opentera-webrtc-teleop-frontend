@@ -15,6 +15,16 @@
             class="navbar-item margin-right-extend margin-left-extend"
           />
           <action-button
+            label="StartUp"
+            class="StartUp-button navbar-item"
+            @clicked="onStartUp"
+          />
+          <action-button
+            label="ShutDown"
+            class="ShutDown-button navbar-item"
+            @clicked="onShutDown"
+          />
+          <action-button
             label="CapDeadImg"
             class="CapDeadImg-button navbar-item"
             @clicked="onCapDeadImg"
@@ -86,6 +96,22 @@ export default {
     navToggler() {
       this.showNav = !this.showNav;
       if (this.showSettings && !this.showNav) this.showSettings = false;
+    },
+    onStartUp() {
+      // TODO: refactor this to be reusable for the stop button in the expandable widget
+      if (this.$store.state.localClient.openteraTeleop.client) {
+        this.$store.state.localClient.openteraTeleop.client.sendToAll(
+          JSON.stringify({ type: "startupdocker", state: true })
+        );
+      }
+    },
+    onShutDown() {
+      // TODO: refactor this to be reusable for the stop button in the expandable widget
+      if (this.$store.state.localClient.openteraTeleop.client) {
+        this.$store.state.localClient.openteraTeleop.client.sendToAll(
+          JSON.stringify({ type: "shutdowndocker", state: true })
+        );
+      }
     },
     onStop() {
       // TODO: refactor this to be reusable for the stop button in the expandable widget
