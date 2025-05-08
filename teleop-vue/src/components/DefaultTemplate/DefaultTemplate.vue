@@ -67,7 +67,6 @@ export default {
     this.$store.commit(
       "localClient/openteraTeleop/setMessageEventHandler",
       (message) => {
-        const parsedMsg = JSON.parse(message);
         // ✅ Handle ping message and respond with pong
         if (message === "ping") {
           console.log("[Heartbeat] Received raw ping. Sending JSON pong...");
@@ -76,6 +75,8 @@ export default {
           );
           return;
         }
+        
+        const parsedMsg = JSON.parse(message);
 
         if (parsedMsg.type === "robotStatus") {
           this.$store.commit(
