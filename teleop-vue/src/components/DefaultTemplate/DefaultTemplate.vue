@@ -68,6 +68,14 @@ export default {
       "localClient/openteraTeleop/setMessageEventHandler",
       (message) => {
         const parsedMsg = JSON.parse(message);
+        // ✅ Handle ping message and respond with pong
+        if (message === "ping") {
+          this.$store.state.localClient.openteraTeleop.client.sendToAll(
+            JSON.stringify({ type: "heartbeat", label: "pong" })
+          );
+          return;
+        }
+
         if (parsedMsg.type === "robotStatus") {
           this.$store.commit(
             "localClient/openteraTeleop/changeRobotStatus",

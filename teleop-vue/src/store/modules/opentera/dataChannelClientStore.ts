@@ -185,11 +185,6 @@ export class DataChannelClientStore extends SignalingClientStore {
       message: string
       /* eslint-enable  */
     ) => {
-      if (message === "ping") {
-        context.state.client.sendToAll(JSON.stringify({ type: "heartbeat", label: "pong" }));
-        return;
-      }
-
       if (context.state.onMessageEventHandler) {
         context.state.onMessageEventHandler(message);
       }
