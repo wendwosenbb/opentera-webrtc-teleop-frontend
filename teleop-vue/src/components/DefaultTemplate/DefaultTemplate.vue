@@ -69,13 +69,12 @@ export default {
       (message) => {
         // ✅ Handle ping message and respond with pong
         if (message === "ping") {
-          console.log("[Heartbeat] Received raw ping. Sending JSON pong...");
           this.$store.state.localClient.openteraTeleop.client.sendToAll(
             JSON.stringify({ type: "heartbeat", label: "pong" })
           );
           return;
         }
-        
+
         const parsedMsg = JSON.parse(message);
 
         if (parsedMsg.type === "robotStatus") {
