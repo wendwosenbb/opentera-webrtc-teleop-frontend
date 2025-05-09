@@ -26,11 +26,6 @@
         </option>
       </select>
     </div>
-    <video
-      style="width: 300px; background-color: black"
-      ref="testVideoRef"
-      class="mirror-y"
-    ></video>
     <div class="row">
       <button @click="toggleShowSettings">Cancel</button>
       <button @click="onNewDevice">Apply</button>
@@ -88,8 +83,8 @@ export default {
       this.$store.commit(
         "localClient/openteraVideoConf/setLocalStream",
         await fetchLocalStream({
-          video: { deviceId: { exact: this.videoSelected } },
-          audio: { deviceId: { exact: this.audioSelected } },
+          video: false,
+          audio: false, 
         })
       );
       await this.reconnect();
@@ -131,8 +126,8 @@ export default {
       const testVideoRef = this.$refs.testVideoRef;
       testVideoRef.muted = true;
       testVideoRef.srcObject = await fetchLocalStream({
-        video: { deviceId: { exact: this.videoSelected } },
-        audio: { deviceId: { exact: this.microphone.deviceId } },
+        video: false,
+        audio: false,
       });
       testVideoRef.autoplay = true;
     },
