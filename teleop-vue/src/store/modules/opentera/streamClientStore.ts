@@ -104,7 +104,7 @@ export class StreamClientStore extends SignalingClientStore {
 
     if (this.canSendStream) {
       // Commented to allow videoconf to connect without a local feed
-      context.commit("setLocalStream", await fetchLocalStream({ video: false, audio: false }));
+      context.commit("setLocalStream", await fetchLocalStream());
     }
 
     const signalingServerConfiguration = initSignalingServerConfiguration(

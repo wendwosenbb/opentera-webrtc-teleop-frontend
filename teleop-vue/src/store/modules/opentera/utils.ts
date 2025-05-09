@@ -3,15 +3,17 @@
 import { getBasePath, getOrigin } from "@/config/location";
 
 export function fetchLocalStream(constraint?: MediaStreamConstraints) {
-  const finalConstraint = constraint ?? { video: false, audio: false };
-
   return new Promise<MediaStream | undefined>((resolve) => {
+    if (!constraint) constraint = { video: true, audio: true };
+
     navigator.mediaDevices
-      .getUserMedia(finalConstraint)
+      .getUserMedia(constraint)
       .then((stream: MediaStream): void => resolve(stream))
       .catch((err: DOMException): void => {
-        if (process.env.NODE_ENV != "production") {
-          console.log(err); // eslint-disable-line no-console
+        if(process.env.NODE_ENV != "production")
+        {
+          // eslint-disable-next-line no-console
+          console.log(err);
         }
         alert("Can't access default media (Camera nor mic)");
         resolve(undefined);
