@@ -3,23 +3,22 @@
 import { getBasePath, getOrigin } from "@/config/location";
 
 export function fetchLocalStream(constraint?: MediaStreamConstraints) {
-  return new Promise<MediaStream | undefined>((resolve) => {
-    if (!constraint) constraint = { video: true, audio: true };
+  const finalConstraint = constraint ?? { video: false, audio: false };
 
+  return new Promise<MediaStream | undefined>((resolve) => {
     navigator.mediaDevices
-      .getUserMedia(constraint)
+      .getUserMedia(finalConstraint)
       .then((stream: MediaStream): void => resolve(stream))
       .catch((err: DOMException): void => {
-        if(process.env.NODE_ENV != "production")
-        {
-          // eslint-disable-next-line no-console
-          console.log(err);
+        if (process.env.NODE_ENV != "production") {
+          console.log(err); // eslint-disable-line no-console
         }
         alert("Can't access default media (Camera nor mic)");
         resolve(undefined);
       });
   });
 }
+
 
 export function copyAttribute<T, K extends keyof T>(obj1: T, obj2: T, key: K) {
   obj1[key] = obj2[key];
