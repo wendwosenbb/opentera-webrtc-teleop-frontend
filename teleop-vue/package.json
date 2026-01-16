@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@smartweb/vue-flash-message": "^1.0.0-alpha.12",
-    "opentera-webrtc-web-client": "git+ssh://github.com/BirdseyeRobotics/opentera-webrtc-web-client.git",
+    "opentera-webrtc-web-client": "git+ssh://git@github.com/BirdseyeRobotics/opentera-webrtc-web-client.git",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0-0",
     "vue3-click-away": "^1.2.4",
