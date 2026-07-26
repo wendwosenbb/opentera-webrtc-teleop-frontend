@@ -11,7 +11,6 @@
     @touchEnd="onTouchEnd"
   >
     <div class="fluid pad row-flexbox">
-      <user-video />
       <div
         class="col-flexbox"
         :class="{ col33: isMapExpanded, col100: !isMapExpanded }"
@@ -120,7 +119,6 @@ import { StrafeControl } from "@/components/StrafeControl";
 import KeyboardTeleop from "@/components/KeyboardTeleop/KeyboardTeleop.vue";
 import ExpandableMap from "@/components/ExpandableMap/ExpandableMap.vue";
 import Slider from "@/components/Slider/Slider.vue";
-import UserVideo from "@/components/UserVideo/UserVideo.vue";
 import DeviceSettings from "@/components/DeviceSettings/DeviceSettings.vue";
 import { robotCapabilities } from "../robotCapabilities";
 
@@ -153,7 +151,6 @@ export default {
     KeyboardTeleop,
     ExpandableMap,
     Slider,
-    UserVideo,
     DeviceSettings,
   },
   props: {
