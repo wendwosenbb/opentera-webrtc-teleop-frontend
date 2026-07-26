@@ -15,16 +15,18 @@
 </template>
 
 <script>
-import { roundRect } from "./canvasUtils";
+import { roundRect } from "../Joystick/canvasUtils";
 
+// Single-axis (horizontal only) spring-back control, used to strafe robots
+// that can move laterally. Mirrors Joystick.vue's interaction model, but the
+// knob only ever moves along x and the background fills the whole (wide,
+// short) canvas as a pill instead of an inset square.
 export default {
-  name: "joystick",
+  name: "strafe-control",
   data() {
     return {
       x: 0,
-      yaw: 0,
       loopIntervalId: null,
-      positionChangeIntervalId: null,
       canvas: null,
       context: null,
       isMouseDown: false,
@@ -40,13 +42,8 @@ export default {
       type: Number,
       required: true,
     },
-    absoluteMaxX: {
-      // Maximum linear velocity in m/s
-      type: Number,
-      required: true,
-    },
-    absoluteMaxYaw: {
-      // Maximum angular velocity in rad/s
+    absoluteMaxY: {
+      // Maximum lateral velocity in m/s
       type: Number,
       required: true,
     },
@@ -56,22 +53,21 @@ export default {
       default: 10, // Hz
     },
   },
-  emits: ["joystickPositionChange"],
+  emits: ["strafePositionChange"],
   methods: {
     init() {
       this.initVariables();
       this.drawFrame();
     },
     initVariables() {
-      if (this.c === null || this.y === null || !this.isMouseDown) {
+      if (!this.isMouseDown) {
         this.x = this.getCenterX();
-        this.y = this.getCenterY();
       }
     },
     emitLoop() {
       this.loopIntervalId = setInterval(
         function() {
-          this.emitJoystickPosition();
+          this.emitStrafePosition();
           if (!this.isMouseDown) {
             clearInterval(this.loopIntervalId);
           }
@@ -81,7 +77,7 @@ export default {
     },
     onMouseDown(event) {
       if (event.button === 0) {
-        this.updateJoystickPositionFromMouseEvent(event);
+        this.updateStrafePositionFromMouseEvent(event);
         this.isMouseDown = true;
         this.emitLoop();
       }
@@ -93,71 +89,62 @@ export default {
     },
     onRelease() {
       this.x = this.getCenterX();
-      this.y = this.getCenterY();
       this.isMouseDown = false;
-      this.emitJoystickPosition();
+      this.emitStrafePosition();
       this.drawFrame();
     },
     onMouseMove(event) {
       if (this.isMouseDown) {
-        this.updateJoystickPositionFromMouseEvent(event);
+        this.updateStrafePositionFromMouseEvent(event);
       }
     },
     onMouseOut() {
-      // TODO: Change behaviour so that the joystick doesn't reset when the mouse
-      // is out of it's bounds.
       this.x = this.getCenterX();
-      this.y = this.getCenterY();
       this.isMouseDown = false;
-      this.emitJoystickPosition();
+      this.emitStrafePosition();
       this.drawFrame();
     },
     onTouchMove(event) {
-      this.updateJoystickPositionFromMouseEvent(event.touches[0]); // Only use the first touch
+      this.updateStrafePositionFromMouseEvent(event.touches[0]); // Only use the first touch
     },
     onTouchStart(event) {
-      event.preventDefault(); // Prevents scrolling when touching the joystick
+      event.preventDefault(); // Prevents scrolling when touching the control
       this.isMouseDown = true;
       this.activeTouchID = event.touches[0].identifier;
-      this.updateJoystickPositionFromMouseEvent(event.touches[0]); // Only use the first touch
+      this.updateStrafePositionFromMouseEvent(event.touches[0]); // Only use the first touch
       this.emitLoop();
     },
     onTouchEnd(event) {
-      // Make sure the joystick interaction is only stopped if the touchend event was triggered
-      // by the finger that was controlling the joystick and not another.
+      // Make sure the interaction is only stopped if the touchend event was triggered
+      // by the finger that was controlling this control and not another.
       for (const changedTouch of event.changedTouches) {
         if (changedTouch.identifier === this.activeTouchID) {
           this.onRelease();
         }
       }
     },
-    updateJoystickPositionFromMouseEvent(event) {
+    updateStrafePositionFromMouseEvent(event) {
       const rect = this.canvas.getBoundingClientRect();
-      this.x = event.clientX - rect.left;
-      this.y = event.clientY - rect.top;
-
       const centerX = this.getCenterX();
-      const centerY = this.getCenterY();
+      const dragRange = this.getDragRange();
+
+      this.x = event.clientX - rect.left;
+
       const deltaX = this.x - centerX;
-      const deltaY = this.y - centerY;
-
-      if (Math.abs(deltaX) > this.getCanvasRadius()) {
-        this.x = deltaX + centerX;
-      }
-      if (Math.abs(deltaY) > this.getCanvasRadius()) {
-        this.y = deltaY + centerY;
+      if (Math.abs(deltaX) > dragRange) {
+        this.x = centerX + Math.sign(deltaX) * dragRange;
       }
 
-      this.emitJoystickPosition();
+      this.emitStrafePosition();
       this.drawFrame();
     },
     drawFrame() {
       this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
       this.drawBackground();
-      this.drawJoystick();
+      this.drawKnob();
     },
-    drawJoystick() {
+    drawKnob() {
       if (this.isMouseDown) {
         this.context.fillStyle = "rgba(0, 0, 0, 0.75)";
       } else {
@@ -167,8 +154,8 @@ export default {
       this.context.beginPath();
       this.context.arc(
         this.x,
-        this.y,
-        this.getJoystickRadius(),
+        this.getCenterY(),
+        this.getKnobRadius(),
         0,
         2 * Math.PI
       );
@@ -177,22 +164,14 @@ export default {
     drawBackground() {
       const centerX = this.getCenterX();
       const centerY = this.getCenterY();
+      const dragRange = this.getDragRange();
 
-      const radius = this.getCanvasRadius();
-
-      //Draw the background area
+      //Draw the background pill, filling the whole canvas
       this.context.fillStyle = "#87CEEB";
-      roundRect(
-        this.context,
-        centerX - radius,
-        centerY - radius,
-        radius * 2,
-        radius * 2,
-        radius / 4
-      );
+      roundRect(this.context, 0, 0, this.canvas.width, this.canvas.height, centerY);
       this.context.fill();
 
-      const pointOffset = radius / 8;
+      const pointOffset = this.canvas.height / 8;
       const halfPointOffset = pointOffset / 2;
 
       //draw center cross
@@ -207,39 +186,10 @@ export default {
       this.context.lineTo(centerX + pointOffset, centerY);
       this.context.stroke();
 
-      //draw the up triangle
-      const upTriangleStartY = centerY - (3 * radius) / 4;
-
       this.context.fillStyle = "#4682B4";
-      this.context.beginPath();
-      this.context.moveTo(centerX, upTriangleStartY);
-      this.context.lineTo(
-        centerX - halfPointOffset,
-        upTriangleStartY + pointOffset
-      );
-      this.context.lineTo(
-        centerX + halfPointOffset,
-        upTriangleStartY + pointOffset
-      );
-      this.context.fill();
-
-      //draw the down triangle
-      const downTriangleStartY = centerY + (3 * radius) / 4;
-
-      this.context.beginPath();
-      this.context.moveTo(centerX, downTriangleStartY);
-      this.context.lineTo(
-        centerX - halfPointOffset,
-        downTriangleStartY - pointOffset
-      );
-      this.context.lineTo(
-        centerX + halfPointOffset,
-        downTriangleStartY - pointOffset
-      );
-      this.context.fill();
 
       //draw the left triangle
-      const leftTriangleStartX = centerX - (3 * radius) / 4;
+      const leftTriangleStartX = centerX - dragRange * 0.85;
 
       this.context.beginPath();
       this.context.moveTo(leftTriangleStartX, centerY);
@@ -254,7 +204,7 @@ export default {
       this.context.fill();
 
       //draw the right triangle
-      const rightTriangleStartX = centerX + (3 * radius) / 4;
+      const rightTriangleStartX = centerX + dragRange * 0.85;
 
       this.context.beginPath();
       this.context.moveTo(rightTriangleStartX, centerY);
@@ -268,30 +218,27 @@ export default {
       );
       this.context.fill();
     },
-    emitJoystickPosition() {
-      // Emit joystick position as a velocity command with x corresponding the robots
-      //  forward linear axis and yaw corresponding to the angular axis.
+    emitStrafePosition() {
+      // Emit strafe position as a velocity command, y corresponding to the
+      // robot's lateral axis.
       const event = {
-        x:
-          -((this.y - this.getCenterY()) * this.absoluteMaxX) /
-          this.getCanvasRadius(),
-        yaw:
-          -((this.x - this.getCenterX()) * this.absoluteMaxYaw) /
-          this.getCanvasRadius(),
+        y:
+          -((this.x - this.getCenterX()) * this.absoluteMaxY) /
+          this.getDragRange(),
       };
-      this.$emit("joystickPositionChange", event);
+      this.$emit("strafePositionChange", event);
     },
     getCenterX() {
       return this.canvas.width / 2;
     },
     getCenterY() {
-      return this.canvas.width / 2;
+      return this.canvas.height / 2;
     },
-    getCanvasRadius() {
-      return Math.min(this.canvas.width, this.canvas.height) / 2;
+    getKnobRadius() {
+      return this.canvas.height / 4;
     },
-    getJoystickRadius() {
-      return this.getCanvasRadius() / 4;
+    getDragRange() {
+      return this.canvas.width / 2 - this.getKnobRadius() - 3;
     },
   },
   mounted() {
@@ -301,7 +248,6 @@ export default {
   },
   unmounted() {
     clearInterval(this.loopIntervalId);
-    clearInterval(this.positionChangeIntervalId);
   },
 };
 </script>

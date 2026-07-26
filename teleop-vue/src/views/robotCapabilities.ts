@@ -8,6 +8,7 @@ export function robotCapabilities(robotType: string | null | undefined) {
             isSingleCamera: robotType == "TTOP",
             usesMap: robotType != "TTOP",
             hasTtopHeadMovements: robotType == "TTOP",
+            canStrafe: robotType == "GO2",
         }
     };
 }

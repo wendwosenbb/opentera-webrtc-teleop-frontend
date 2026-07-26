@@ -68,15 +68,25 @@
       v-on:maxSpeedChangedEvent="onMaxSpeedChanged"
       v-show="showControls && enableKeyboardTeleop"
     />
-    <joystick
-      :width="150"
-      :height="150"
-      class="telepresence-joystick"
-      v-bind:absolute-max-x="scaledMaxX"
-      v-bind:absolute-max-yaw="scaledMaxYaw"
-      v-on:joystickPositionChange="updateCmdVel"
+    <div
+      class="telepresence-controls"
       v-show="showControls && enableKeyboardTeleop"
-    />
+    >
+      <joystick
+        :width="150"
+        :height="150"
+        v-bind:absolute-max-x="scaledMaxX"
+        v-bind:absolute-max-yaw="scaledMaxYaw"
+        v-on:joystickPositionChange="updateCmdVel"
+      />
+      <strafe-control
+        v-if="robotCaps.canStrafe"
+        :width="150"
+        :height="56"
+        v-bind:absolute-max-y="scaledMaxY"
+        v-on:strafePositionChange="updateStrafeCmd"
+      />
+    </div>
     <keyboard-teleop
       v-bind:absolute-max-x="scaledMaxX"
       v-bind:absolute-max-yaw="scaledMaxYaw"
@@ -106,6 +116,7 @@ import { VideoParticipant } from "@/components/VideoParticipant";
 import { ButtonConference } from "@/components/ButtonConference";
 import { ParticipantsList } from "@/components/ParticipantsList";
 import { Joystick } from "@/components/Joystick";
+import { StrafeControl } from "@/components/StrafeControl";
 import KeyboardTeleop from "@/components/KeyboardTeleop/KeyboardTeleop.vue";
 import ExpandableMap from "@/components/ExpandableMap/ExpandableMap.vue";
 import Slider from "@/components/Slider/Slider.vue";
@@ -118,10 +129,12 @@ export default {
   data() {
     return {
       chatTextArea: null,
-      cmd: { x: 0, yaw: 0 }, // Global velocity command to be sent to the robot (x: m/s, y: rad/s)
+      cmd: { x: 0, y: 0, yaw: 0 }, // Global velocity command to be sent to the robot (x, y: m/s, yaw: rad/s)
       maxX: 0.3,
+      maxY: 0.2,
       maxYaw: 0.75,
       scaledMaxX: 0.3,
+      scaledMaxY: 0.2,
       scaledMaxYaw: 0.55,
       mouseDown: false,
       clickPosition: { x: 0, y: 0 },
@@ -136,6 +149,7 @@ export default {
     ButtonConference,
     ParticipantsList,
     Joystick,
+    StrafeControl,
     KeyboardTeleop,
     ExpandableMap,
     Slider,
@@ -226,9 +240,15 @@ export default {
       this.enableKeyboardTeleop = enabled;
     },
     updateCmdVel(newCmd) {
-      // Update the global velocity command with the command from the keyboard or joystick
-      // TODO: prioritize one of the two sources over the other.
-      this.cmd = newCmd;
+      // Driven by the joystick and the keyboard, which both own x and yaw.
+      // Only these two fields are touched so a strafe command in flight isn't clobbered.
+      this.cmd.x = newCmd.x;
+      this.cmd.yaw = newCmd.yaw;
+      this.sendCmdVel();
+    },
+    updateStrafeCmd(newCmd) {
+      // Driven by the strafe control, which owns y only.
+      this.cmd.y = newCmd.y;
       this.sendCmdVel();
     },
     sendCmdVel() {
@@ -245,6 +265,7 @@ export default {
                   ((Math.abs(this.cmd.x) * 2) / 3 + this.maxX / 3)
                 );
             })(),
+            y: this.cmd.y,
             yaw: (() => {
               if (this.robotCaps.isMobile) return this.cmd.yaw;
               else
@@ -332,6 +353,7 @@ export default {
     },
     onMaxSpeedChanged(event) {
       this.scaledMaxX = this.maxX * event;
+      this.scaledMaxY = this.maxY * event;
       this.scaledMaxYaw = this.maxYaw * event;
     },
   },
