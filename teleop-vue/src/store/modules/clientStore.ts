@@ -134,7 +134,7 @@ const ClientStore = {
     },
   },
   modules: {
-    openteraVideoConf: new StreamClientStore(false).getModule(),
+    openteraVideoConf: new StreamClientStore(true).getModule(),
     openteraCameraX: new StreamClientStore(false).getModule(),
     openteraMap: new StreamClientStore(false).getModule(),
     openteraTeleop: new DataChannelClientStore().getModule(),
