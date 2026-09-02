@@ -14,6 +14,7 @@
           <actions-menu
             class="navbar-item margin-right-extend margin-left-extend"
           />
+          <mission-toggle-button class="navbar-item" />
           <action-button
             label="StartUp"
             class="StartUp-button navbar-item"
@@ -63,6 +64,7 @@ import BatteryIndicator from "../BatteryIndicator/BatteryIndicator.vue";
 import SignalStrengthIndicator from "../SignalStrengthIndicator/SignalStrengthIndicator.vue";
 import ActionButton from "@/components/ActionButton/ActionButton.vue";
 import ActionsMenu from "@/components/ActionsMenu/ActionsMenu.vue";
+import { MissionToggleButton } from "@/components/MissionToggleButton";
 
 export default {
   name: "navigation-bar",
@@ -72,6 +74,7 @@ export default {
     SignalStrengthIndicator,
     ActionButton,
     ActionsMenu,
+    MissionToggleButton,
   },
   data() {
     return {
