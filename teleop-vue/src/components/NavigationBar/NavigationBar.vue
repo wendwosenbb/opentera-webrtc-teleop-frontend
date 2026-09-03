@@ -36,9 +36,9 @@
             @clicked="onGetRobotPose"
           />
           <action-button
-            label="ToggleBumpStop"
-            class="ToggleBumpStop-button navbar-item"
-            @clicked="onToggleBumpStop"
+            :label="'ToggleRobot\nPosture'"
+            class="ToggleRobotPosture-button navbar-item"
+            @clicked="onToggleRobotPosture"
           />
           <signal-strength-indicator class="navbar-item" />
           <battery-indicator class="navbar-item" />
@@ -138,7 +138,7 @@ export default {
       );
     }
    },
-    onToggleBumpStop() {
+    onToggleRobotPosture() {
     if (this.$store.state.localClient.openteraTeleop.client) {
       this.$store.state.localClient.openteraTeleop.client.sendToAll(
         JSON.stringify({ type: "ToggleBumpStop", state: true })
