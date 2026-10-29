@@ -25,11 +25,7 @@
             class="ShutDown-button navbar-item"
             @clicked="onShutDown"
           />
-          <action-button
-            label="CapDeadImg"
-            class="CapDeadImg-button navbar-item"
-            @clicked="onCapDeadImg"
-          />
+          <capture-button class="navbar-item" />
           <action-button
             label="GetRobotPose"
             class="GetRobotPose-button navbar-item"
@@ -65,6 +61,7 @@ import SignalStrengthIndicator from "../SignalStrengthIndicator/SignalStrengthIn
 import ActionButton from "@/components/ActionButton/ActionButton.vue";
 import ActionsMenu from "@/components/ActionsMenu/ActionsMenu.vue";
 import { MissionToggleButton } from "@/components/MissionToggleButton";
+import { CaptureButton } from "@/components/CaptureButton";
 
 export default {
   name: "navigation-bar",
@@ -75,6 +72,7 @@ export default {
     ActionButton,
     ActionsMenu,
     MissionToggleButton,
+    CaptureButton,
   },
   data() {
     return {
@@ -124,13 +122,6 @@ export default {
         );
       }
     },
-    onCapDeadImg() {
-    if (this.$store.state.localClient.openteraTeleop.client) {
-      this.$store.state.localClient.openteraTeleop.client.sendToAll(
-        JSON.stringify({ type: "CapDeadImg", state: true })
-      );
-    }
-   },
     onGetRobotPose() {
     if (this.$store.state.localClient.openteraTeleop.client) {
       this.$store.state.localClient.openteraTeleop.client.sendToAll(
