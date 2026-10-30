@@ -39,6 +39,7 @@ export class DataChannelClientStore extends SignalingClientStore {
       },
       waypointReached: 0,
       dockingStatus: "",
+      missionMode: false,
       labelHandling: {
         labels: [
           {
@@ -91,6 +92,9 @@ export class DataChannelClientStore extends SignalingClientStore {
       },
       updateDockingStatus(state: DataChannelClientState, payload: string) {
         state.dockingStatus = payload;
+      },
+      updateMissionMode(state: DataChannelClientState, payload: boolean) {
+        state.missionMode = payload;
       },
       setRobotMicVolume(state: DataChannelClientState, payload: number) {
         state.status.micVolume = payload;

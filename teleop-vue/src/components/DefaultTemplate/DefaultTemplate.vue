@@ -92,6 +92,11 @@ export default {
             "localClient/openteraTeleop/updateDockingStatus",
             parsedMsg.status
           );
+        } else if (parsedMsg.type === "mission_mode_status") {
+          this.$store.commit(
+            "localClient/openteraTeleop/updateMissionMode",
+            parsedMsg.state === true
+          );
         } else if (parsedMsg.type === "labels") {
           this.$store.commit(
             "localClient/openteraTeleop/updateLabels",

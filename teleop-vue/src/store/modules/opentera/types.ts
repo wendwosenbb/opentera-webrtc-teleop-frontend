@@ -99,6 +99,7 @@ export interface DataChannelClientState extends SignalingClientRoom {
   status: RobotStatus;
   waypointReached: number;
   dockingStatus: string;
+  missionMode: boolean;
   labelHandling: LabelHandling;
 }
 
